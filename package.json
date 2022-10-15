@@ -1,0 +1,36 @@
+{
+  "version": "0.0.0",
+  "description": "This plugin enable your server to process JSON5 payloads",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "test": "tap test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eomm/fastify-json5.git"
+  },
+  "keywords": [
+    "fastify",
+    "fastify-plugin",
+    "json5",
+    "parser"
+  ],
+  "author": "Manuel Spigolon <behemoth89@gmail.com> (https://github.com/Eomm)",
+  "funding": "https://github.com/Eomm/fastify-json5?sponsor=1",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Eomm/fastify-json5/issues"
+  },
+  "homepage": "https://github.com/Eomm/fastify-json5#readme",
+  "dependencies": {
+    "fastify-plugin": "^4.3.0",
+    "json5": "^2.2.1"
+  },
+  "devDependencies": {
+    "fastify": "^4.8.1",
+    "standard": "^17.0.0",
+    "tap": "^16.3.0"
+  }
+}

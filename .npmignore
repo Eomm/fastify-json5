@@ -53,6 +53,8 @@ typings/
 # Optional eslint cache
 .eslintcache
 
+.vscode/
+
 # Microbundle cache
 .rpt2_cache/
 .rts2_cache_cjs/
@@ -102,5 +104,11 @@ dist
 
 # TernJS port file
 .tern-port
-.vscode/
 package-lock.json
+
+example.js
+test/
+.github/
+.eslintrc
+asd*
+qwe*
