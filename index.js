@@ -10,6 +10,8 @@ const FST_ERR_CTP_EMPTY_JSON5_BODY = createError(
   400
 )
 
+const clone = require('rfdc')()
+
 const JSON5 = require('json5')
 
 function fastifyJson5 (fastify, options, next) {
@@ -26,14 +28,40 @@ function fastifyJson5 (fastify, options, next) {
   next()
 }
 
-function json5Parser (reviver, req, body, done) {
+function json5Parser (userReviver, req, body, done) {
   if (body === '' || body == null) {
     done(new FST_ERR_CTP_EMPTY_JSON5_BODY())
     return
   }
 
   try {
-    const payload = JSON5.parse(body, reviver)
+    const payload = JSON5.parse(body, function securityReviver (key, value) {
+      console.log({
+        key,
+        value,
+        p: value.__proto__
+      })
+      if (
+        key === '__proto__' ||
+        key === 'constructor' ||
+        key === 'prototype') {
+        // just NO
+        return undefined
+      }
+
+      let bad
+      // eslint-disable-next-line no-proto
+      if (value.__proto__ && (bad = Object.keys(value.__proto__), bad).length > 0) {
+        value.__proto__ = undefined
+        for (const k of bad) {
+          console.log('deleting', k)
+          delete value[k]
+        }
+        return value
+      }
+
+      return userReviver?.(key, value) ?? value
+    })
     done(null, payload)
   } catch (err) {
     err.statusCode = 400

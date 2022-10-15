@@ -10,7 +10,7 @@ const headers = {
 
 test('basic test', async t => {
   const app = fastify()
-  await app.register(plugin)
+  app.register(plugin)
 
   app.post('/', (req, reply) => {
     t.strictSame(req.body, {
@@ -71,7 +71,7 @@ test('basic test', async t => {
 
 test('set reviver', async t => {
   const app = fastify()
-  await app.register(plugin, {
+  app.register(plugin, {
     reviver: (key, value) => {
       if (key === '') {
         return value
@@ -120,7 +120,7 @@ test('set reviver', async t => {
 
 test('bad payload', async t => {
   const app = fastify()
-  await app.register(plugin)
+  app.register(plugin)
 
   app.post('/', (req, reply) => {
     t.fail('should not be called')
@@ -143,7 +143,7 @@ test('bad payload', async t => {
 
 test('empty payload', async t => {
   const app = fastify()
-  await app.register(plugin)
+  app.register(plugin)
 
   app.post('/', (req, reply) => {
     t.fail('should not be called')
