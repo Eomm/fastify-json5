@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Eomm/fastify-json5#readme",
   "dependencies": {
+    "@fastify/error": "^3.0.0",
     "fastify-plugin": "^4.3.0",
     "json5": "^2.2.1"
   },
