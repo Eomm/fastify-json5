@@ -21,6 +21,8 @@ function fastifyJson5 (fastify, options, next) {
     { parseAs: 'string' },
     json5Parser.bind(null, reviver))
 
+  fastify.decorateReply('sendJSON5', sendJson5)
+
   next()
 }
 
@@ -37,6 +39,11 @@ function json5Parser (reviver, req, body, done) {
     err.statusCode = 400
     done(err)
   }
+}
+
+function sendJson5 (json, options) {
+  this.type('application/json5')
+  return this.send(JSON5.stringify(json, options))
 }
 
 module.exports = fp(fastifyJson5, {

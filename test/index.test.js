@@ -26,10 +26,14 @@ test('basic test', async t => {
       andIn: ['arrays'],
       backwardsCompatible: 'with JSON'
     })
-    reply.send(req.body)
+
+    reply.sendJSON5(req.body, {
+      quote: "'",
+      space: 1
+    })
   })
 
-  await app.inject({
+  const response = await app.inject({
     method: 'POST',
     url: '/',
     headers,
@@ -47,6 +51,71 @@ test('basic test', async t => {
       "backwardsCompatible": "with JSON",
     }`
   })
+
+  t.same(response.payload, `{
+ unquoted: 'and you can quote me on that',
+ singleQuotes: 'I can use "double quotes" here',
+ lineBreaks: 'Look, Mom!     No \\n\\'s!',
+ hexadecimal: 912559,
+ leadingDecimalPoint: 0.8675309,
+ andTrailing: 8675309,
+ positiveSign: 1,
+ negativeSign: -9,
+ trailingComma: 'in objects',
+ andIn: [
+  'arrays',
+ ],
+ backwardsCompatible: 'with JSON',
+}`)
+})
+
+test('set reviver', async t => {
+  const app = fastify()
+  await app.register(plugin, {
+    reviver: (key, value) => {
+      if (key === '') {
+        return value
+      }
+      return typeof value
+    }
+  })
+
+  app.post('/', (req, reply) => {
+    t.strictSame(req.body, {
+      unquoted: 'string',
+      singleQuotes: 'string',
+      lineBreaks: 'string',
+      hexadecimal: 'number',
+      leadingDecimalPoint: 'number',
+      andTrailing: 'number',
+      positiveSign: 'number',
+      negativeSign: 'number',
+      trailingComma: 'string',
+      andIn: 'object',
+      backwardsCompatible: 'string'
+    })
+    return 'ok'
+  })
+
+  const response = await app.inject({
+    method: 'POST',
+    url: '/',
+    headers,
+    payload: `{
+      // comments
+      unquoted: 'and you can quote me on that',
+      singleQuotes: 'I can use "double quotes" here',
+      lineBreaks: "Look, Mom! \
+    No \\n's!",
+      hexadecimal: 0xdecaf,
+      leadingDecimalPoint: .8675309, andTrailing: 8675309.,
+      positiveSign: +1,
+      negativeSign: -9,
+      trailingComma: 'in objects', andIn: ['arrays',],
+      "backwardsCompatible": "with JSON",
+    }`
+  })
+  t.same(response.statusCode, 200)
 })
 
 test('bad payload', async t => {
