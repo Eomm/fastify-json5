@@ -10,18 +10,14 @@ const headers = {
 }
 
 test('proto-poisoning', t => {
-  t.plan(6)
+  t.plan(3)
 
   const app = fastify()
   app.register(plugin)
   t.teardown(app.close.bind(app))
 
   app.post('/', (req, reply) => {
-    // eslint-disable-next-line no-proto
-    t.strictSame(req.body.__proto__, undefined)
-    t.strictSame(req.body, Object.create({ b: 42, c: ['a'] }))
-    t.equal({}, Object.assign({}, req.body).a)
-    reply.send({ ok: true })
+    t.fail('should not be called')
   })
 
   app.listen({ port: 0 }, function (err) {
@@ -34,7 +30,33 @@ test('proto-poisoning', t => {
       body: '{ __proto__: { a: 55 }, b: 42, c: ["a"] }'
     }, (err, response, body) => {
       t.error(err)
-      t.equal(response.statusCode, 200)
+      t.equal(response.statusCode, 400)
+    })
+  })
+})
+
+test('proto-poisoning in array', t => {
+  t.plan(3)
+
+  const app = fastify()
+  app.register(plugin)
+  t.teardown(app.close.bind(app))
+
+  app.post('/', (req, reply) => {
+    t.fail('should not be called')
+  })
+
+  app.listen({ port: 0 }, function (err) {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + app.server.address().port,
+      headers,
+      body: '{ b: 42, c: [ {__proto__: { a: 55 }} ] }'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 400)
     })
   })
 })
