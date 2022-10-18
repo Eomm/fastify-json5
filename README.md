@@ -17,8 +17,8 @@ npm install fastify-json5
 ### Compatibility
 
 | Plugin version | Fastify version |
-| ------------- |:---------------:|
-| `^1.0.0` | `^1.0.0` |
+| -------------- |:---------------:|
+| `^1.0.0` | `^4.0.0` |
 
 
 ## Usage
