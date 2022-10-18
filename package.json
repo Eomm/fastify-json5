@@ -1,6 +1,6 @@
 {
   "name": "fastify-json5",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "This plugin enable your server to process JSON5 payloads",
   "main": "index.js",
   "scripts": {
