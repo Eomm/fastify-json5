@@ -1,7 +1,8 @@
 # fastify-json5
 
+[![ci](https://github.com/Eomm/fastify-json5/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Eomm/fastify-json5/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/fastify-json5)](https://www.npmjs.com/package/fastify-json5)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![ci](https://github.com/Eomm/fastify-json5/actions/workflows/ci.yml/badge.svg)](https://github.com/Eomm/fastify-json5/actions/workflows/ci.yml)
 
 This plugin enable your server to process JSON5 payloads.  
 It adds a new `application/json5` content type parser to Fastify and
@@ -18,6 +19,7 @@ npm install fastify-json5
 
 | Plugin version | Fastify version |
 | -------------- |:---------------:|
+| `^2.0.0` | `^5.0.0` |
 | `^1.0.0` | `^4.0.0` |
 
 

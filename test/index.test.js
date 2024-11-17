@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const fastify = require('fastify')
 const plugin = require('../index')
 
@@ -13,7 +13,7 @@ test('basic test', async t => {
   app.register(plugin)
 
   app.post('/', (req, reply) => {
-    t.strictSame(req.body, {
+    t.assert.deepStrictEqual(req.body, {
       unquoted: 'and you can quote me on that',
       singleQuotes: 'I can use "double quotes" here',
       lineBreaks: "Look, Mom!     No \n's!",
@@ -52,7 +52,7 @@ test('basic test', async t => {
     }`
   })
 
-  t.same(response.payload, `{
+  t.assert.strictEqual(response.payload, `{
  unquoted: 'and you can quote me on that',
  singleQuotes: 'I can use "double quotes" here',
  lineBreaks: 'Look, Mom!     No \\n\\'s!',
@@ -81,7 +81,7 @@ test('set reviver', async t => {
   })
 
   app.post('/', (req, reply) => {
-    t.strictSame(req.body, {
+    t.assert.deepStrictEqual(req.body, {
       unquoted: 'string',
       singleQuotes: 'string',
       lineBreaks: 'string',
@@ -115,7 +115,7 @@ test('set reviver', async t => {
       "backwardsCompatible": "with JSON",
     }`
   })
-  t.same(response.statusCode, 200)
+  t.assert.strictEqual(response.statusCode, 200)
 })
 
 test('bad payload', async t => {
@@ -123,7 +123,7 @@ test('bad payload', async t => {
   app.register(plugin)
 
   app.post('/', (req, reply) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   const response = await app.inject({
@@ -133,8 +133,8 @@ test('bad payload', async t => {
     payload: '<ops>not a json</ops>'
   })
 
-  t.equal(response.statusCode, 400)
-  t.strictSame(response.json(), {
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.deepStrictEqual(response.json(), {
     statusCode: 400,
     error: 'Bad Request',
     message: "JSON5: invalid character '<' at 1:1"
@@ -146,7 +146,7 @@ test('empty payload', async t => {
   app.register(plugin)
 
   app.post('/', (req, reply) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   const response = await app.inject({
@@ -156,8 +156,8 @@ test('empty payload', async t => {
     payload: null
   })
 
-  t.equal(response.statusCode, 400)
-  t.strictSame(response.json(), {
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.deepStrictEqual(response.json(), {
     statusCode: 400,
     code: 'FST_ERR_CTP_EMPTY_JSON5_BODY',
     error: 'Bad Request',

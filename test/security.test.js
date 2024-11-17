@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const fastify = require('fastify')
 const plugin = require('../index')
@@ -9,19 +9,19 @@ const headers = {
   'content-type': 'application/json5'
 }
 
-test('proto-poisoning', t => {
+test('proto-poisoning', (t, done) => {
   t.plan(3)
 
   const app = fastify()
   app.register(plugin)
-  t.teardown(app.close.bind(app))
+  t.after(() => { app.close() })
 
   app.post('/', (req, reply) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   app.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -29,25 +29,26 @@ test('proto-poisoning', t => {
       headers,
       body: '{ __proto__: { a: 55 }, b: 42, c: ["a"] }'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 400)
+      done()
     })
   })
 })
 
-test('proto-poisoning in array', t => {
+test('proto-poisoning in array', (t, done) => {
   t.plan(3)
 
   const app = fastify()
   app.register(plugin)
-  t.teardown(app.close.bind(app))
+  t.after(() => { app.close() })
 
   app.post('/', (req, reply) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   app.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -55,27 +56,28 @@ test('proto-poisoning in array', t => {
       headers,
       body: '{ b: 42, c: [ {__proto__: { a: 55 }} ] }'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 400)
+      done()
     })
   })
 })
 
-test('constructor-poisoning', t => {
+test('constructor-poisoning', (t, done) => {
   t.plan(5)
 
   const app = fastify()
   app.register(plugin)
-  t.teardown(app.close.bind(app))
+  t.after(() => { app.close() })
 
   app.post('/', (request, reply) => {
-    t.strictSame(request.body, { z: 1 })
-    t.equal(undefined, Object.assign({}, request.body).foo)
+    t.assert.deepStrictEqual(request.body, { z: 1 })
+    t.assert.strictEqual(undefined, Object.assign({}, request.body).foo)
     reply.send({ ok: true })
   })
 
   app.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -83,8 +85,9 @@ test('constructor-poisoning', t => {
       headers,
       body: '{ constructor: { "prototype": { foo: "bar" } }, z: 1 }'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
