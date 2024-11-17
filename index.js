@@ -71,5 +71,5 @@ function sendJson5 (json, options) {
 
 module.exports = fp(fastifyJson5, {
   name: 'fastify-json5',
-  fastify: '^4.x'
+  fastify: '^5.x'
 })
