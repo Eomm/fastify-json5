@@ -1,7 +1,11 @@
-name: ci
+name: CI
 
 on:
   push:
+    branches:
+     - main
+     - next
+     - 'v*'
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -10,8 +14,18 @@ on:
       - 'docs/**'
       - '*.md'
 
+concurrency:
+    group: "${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+    cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   test:
+    permissions:
+      contents: write
+      pull-requests: write
     uses: fastify/workflows/.github/workflows/plugins-ci.yml@v7
     with:
       lint: true
